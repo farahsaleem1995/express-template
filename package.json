@@ -1,0 +1,24 @@
+{
+  "name": "express-template",
+  "version": "1.0.0",
+  "description": "express.js project template ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js",
+    "watch": "nodemon src/server.js"
+  },
+  "author": "Farah Saleem",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "express-validator": "^6.14.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "jest": "^28.0.2",
+    "nodemon": "^2.0.15"
+  }
+}
