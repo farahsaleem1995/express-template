@@ -52,7 +52,7 @@ const priorityValidation = {
 		errorMessage: number('priority'),
 	},
 	isIn: {
-		options: [[todoPriority.LOW, todoPriority.MEDIUM, todoPriority.HIGH]],
+		options: [Object.values(todoPriority)],
 	},
 };
 
@@ -65,7 +65,7 @@ const statusValidation = {
 		errorMessage: string('status'),
 	},
 	isIn: {
-		options: [[todoStatus.TODO, todoStatus.DOING, todoStatus.DONE]],
+		options: [Object.values(todoStatus)],
 	},
 };
 
