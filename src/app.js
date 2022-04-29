@@ -1,40 +1,34 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const rfs = require('rotating-file-stream');
+const winston = require('winston');
 
 const errorHandler = require('./shared/error-handler');
+const { createLogger } = require('./shared/logger');
 const todosRouter = require('./routes/todos/todos.router');
 
 const app = express();
 
-function pad(num) {
-	return (num > 9 ? '' : '0') + num;
-}
-
-function generator(time, index) {
-	if (!time) return 'file.log';
-
-	var month = time.getFullYear() + '' + pad(time.getMonth() + 1);
-	var day = pad(time.getDate());
-
-	return `requests-${month}${day}-${index}-morgan.log`;
-}
-
-const stream = rfs.createStream(generator, {
-	size: '100M',
-	interval: '1d',
+const logger = createLogger({
+	level: 'http',
 	maxFiles: 5,
-	encoding: 'utf-8',
-	path: 'logs/requests',
-	immutable: true,
+	name: 'requests',
+	datePattern: 'YYYYMMDDHH',
+	format: winston.format.printf(({ message }) => message.substring(0, message.lastIndexOf('\n'))),
 });
 
 app.use(cors());
 app.use(express.json());
-app.use(morgan('combined', { stream }));
+app.use(
+	morgan('combined', {
+		stream: {
+			write: (message) => logger.http(message),
+		},
+	})
+);
 
 app.use('/todos', todosRouter);
+
 app.use(errorHandler);
 
 module.exports = app;

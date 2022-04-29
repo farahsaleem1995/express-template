@@ -5,7 +5,7 @@ require('winston-daily-rotate-file');
 /**
  *
  * @typedef {Object} LoggerOptions
- * @property {('fatal'|'error'|'warn'|'info'|'debug'|'trace')} level Log level.
+ * @property {('fatal'|'error'|'warn'|'info'|'http'|'debug'|'trace')} level Log level.
  * @property {String} name A string used to construct log path.
  * @property {Number} maxSize Maximum size of the file after which it will rotate.
  * @property {Number} maxFiles Maximum number of logs to keep.
