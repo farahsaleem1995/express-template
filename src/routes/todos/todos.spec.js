@@ -19,7 +19,7 @@ describe('Test POST/ Todos', () => {
 	};
 
 	const errorResponse = {
-		succeed: false,
+		success: false,
 	};
 
 	test('It should respond with 201 Created', async () => {
@@ -30,9 +30,12 @@ describe('Test POST/ Todos', () => {
 			.expect(201);
 
 		expect(response.body).toMatchObject({
-			title: 'TODO title',
-			description: 'The description of TODO.',
-			priority: 1,
+			success: true,
+			data: {
+				title: 'TODO title',
+				description: 'The description of TODO.',
+				priority: 1,
+			},
 		});
 	});
 

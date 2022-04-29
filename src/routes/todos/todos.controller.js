@@ -1,7 +1,7 @@
 const express = require('express');
 
 const todosModel = require('../../models/todo.model');
-const { notFound } = require('../../shared/messages');
+const { success, error } = require('../../utils/api-response');
 
 /**
  *
@@ -13,7 +13,7 @@ function addTodo(req, res) {
 
 	todosModel.add(createModel);
 
-	res.status(201).json(createModel);
+	res.status(201).json(success(createModel, 201));
 }
 
 /**
@@ -24,7 +24,7 @@ function addTodo(req, res) {
 function getAllTodos(req, res) {
 	const todos = todosModel.getAll();
 
-	res.status(200).json(todos);
+	res.status(200).json(success(todos, 200));
 }
 
 /**
@@ -37,12 +37,10 @@ function getTodoById(req, res) {
 
 	const todo = todosModel.getById(id);
 	if (!todo) {
-		return res.status(404).json({
-			error: notFound('Todo', id),
-		});
+		return res.status(404).json(error(`Todo with ID "${id}" not found.`, 404));
 	}
 
-	res.status(200).json(todo);
+	res.status(200).json(success(todo, 200));
 }
 
 /**
@@ -56,15 +54,13 @@ function updateTodo(req, res) {
 
 	const todo = todosModel.getById(id);
 	if (!todo) {
-		return res.status(404).json({
-			error: notFound('Todo', id),
-		});
+		return res.status(404).json(error(`Todo with ID "${id}" not found.`, 404));
 	}
 
 	Object.assign(todo, updateModel);
 	todosModel.update(todo);
 
-	res.status(200).json(todo);
+	res.status(200).json(success(todo, 200));
 }
 
 /**
@@ -77,9 +73,7 @@ function removeTodo(req, res) {
 
 	const todo = todosModel.getById(id);
 	if (!todo) {
-		return res.status(404).json({
-			error: notFound('Todo', id),
-		});
+		return res.status(404).json(error(`Todo with ID "${id}" not found.`, 404));
 	}
 
 	todosModel.remove(todo);

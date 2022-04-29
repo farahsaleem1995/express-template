@@ -1,7 +1,7 @@
 const express = require('express');
 const Joi = require('joi');
 
-const { createValidationErrorResponse } = require('./api-response');
+const { validationError } = require('../utils/api-response');
 
 /**
  *
@@ -26,17 +26,19 @@ function validate(schema) {
 				/**
 				 * @type {Joi.ValidationError}
 				 */
-				const validationError = err;
+				const joiError = err;
+				const errors =
+					joiError.details.length == 1
+						? {
+								message: joiError.details[0].message,
+								path: joiError.details[0].path[0],
+						  }
+						: joiError.details.map((err) => ({
+								message: err.message,
+								path: err.path[0],
+						  }));
 
-				return res.status(400).json(
-					createValidationErrorResponse({
-						code: 400,
-						validationErrors: validationError.details.map((err) => ({
-							message: err.message,
-							path: err.path.at(0),
-						})),
-					})
-				);
+				return res.status(400).json(validationError(errors));
 			}
 
 			next(err);
