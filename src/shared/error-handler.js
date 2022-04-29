@@ -1,4 +1,6 @@
 const express = require('express');
+
+const { createErrorResponse } = require('./api-response');
 const { createLogger } = require('./logger');
 
 const errorLogger = createLogger({
@@ -23,9 +25,14 @@ function errorHandler(err, req, res, next) {
 			stack: err.stack,
 		});
 
-		res.status(500).json({
-			error: 'Something went wrong, please try again later',
-		});
+		res.status(500).json(
+			createErrorResponse({
+				code: 500,
+				error: {
+					message: 'Something went wrong, please try again later',
+				},
+			})
+		);
 	}
 
 	next();

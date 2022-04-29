@@ -5,8 +5,8 @@
  * @property {Number} id
  * @property {String} title
  * @property {String} description
- * @property {status} status
- * @property {priority} priority
+ * @property {'todo'|'doing'|'done'} status
+ * @property {0|1|2} priority
  */
 
 const { map } = require('../app');
@@ -100,8 +100,6 @@ function remove(todo) {
 }
 
 module.exports = {
-	todoStatus: status,
-	todoPriority: priority,
 	add,
 	getAll,
 	getById,

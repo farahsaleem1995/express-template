@@ -1,21 +1,46 @@
-const { validationResult } = require('express-validator');
+const express = require('express');
+const Joi = require('joi');
+
+const { createValidationErrorResponse } = require('./api-response');
 
 /**
  *
- * @param {Array<import('express-validator').ValidationChain>} validations
+ * @param {Joi.ObjectSchema<any>} schema
  */
-function validate(validations) {
+function validate(schema) {
+	/**
+	 *
+	 * @param {express.Request} req
+	 * @param {express.Response} res
+	 * @param {express.NextFunction} next
+	 */
 	return async (req, res, next) => {
-		await Promise.all(validations.map((validation) => validation.run(req)));
-
-		const errors = validationResult(req);
-		if (!errors.isEmpty()) {
-			return res.status(400).json({
-				errors: errors.array(),
+		try {
+			await schema.validateAsync(req.body, {
+				abortEarly: false,
 			});
-		}
 
-		next();
+			next();
+		} catch (err) {
+			if (err.isJoi) {
+				/**
+				 * @type {Joi.ValidationError}
+				 */
+				const validationError = err;
+
+				return res.status(400).json(
+					createValidationErrorResponse({
+						code: 400,
+						validationErrors: validationError.details.map((err) => ({
+							message: err.message,
+							path: err.path.at(0),
+						})),
+					})
+				);
+			}
+
+			next(err);
+		}
 	};
 }
 

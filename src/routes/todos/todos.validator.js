@@ -1,88 +1,19 @@
-const { checkSchema } = require('express-validator');
+const Joi = require('joi');
 
-const { todoStatus, todoPriority } = require('../../models/todo.model');
-const { length, exists, string, number } = require('../../shared/messages');
-
-/**
- * @type {import('express-validator').ParamSchema}
- */
-const titleValidation = {
-	in: 'body',
-	isString: {
-		errorMessage: string('title'),
-	},
-	exists: {
-		errorMessage: exists('title'),
-	},
-	isLength: {
-		errorMessage: length('title', 2, 64),
-		options: {
-			min: 2,
-			max: 64,
-		},
-	},
-};
-
-/**
- * @type {import('express-validator').ParamSchema}
- */
-const descriptionValidation = {
-	in: 'body',
-	isString: {
-		errorMessage: string('description'),
-	},
-	exists: {
-		errorMessage: exists('description'),
-	},
-	isLength: {
-		errorMessage: length('description', 2, 1014),
-		options: {
-			min: 2,
-			max: 1024,
-		},
-	},
-};
-
-/**
- * @type {import('express-validator').ParamSchema}
- */
-const priorityValidation = {
-	in: 'body',
-	isNumeric: {
-		errorMessage: number('priority'),
-	},
-	isIn: {
-		options: [Object.values(todoPriority)],
-	},
-};
-
-/**
- * @type {import('express-validator').ParamSchema}
- */
-const statusValidation = {
-	in: 'body',
-	isString: {
-		errorMessage: string('status'),
-	},
-	isIn: {
-		options: [Object.values(todoStatus)],
-	},
-};
-
-const addTodoValidations = checkSchema({
-	title: titleValidation,
-	description: descriptionValidation,
-	priority: priorityValidation,
+const addTodoSchema = Joi.object({
+	title: Joi.string().required().min(2).max(64),
+	description: Joi.string().required().min(2).max(1024),
+	priority: Joi.number().required().valid(0, 1, 2),
 });
 
-const updateTodoValidations = checkSchema({
-	title: titleValidation,
-	description: descriptionValidation,
-	priority: priorityValidation,
-	status: statusValidation,
+const updateTodoSchema = Joi.object({
+	title: Joi.string().required().min(2).max(64),
+	description: Joi.string().required().min(2).max(1024),
+	priority: Joi.number().required().valid(0, 1, 2),
+	status: Joi.string().required().valid('todo', 'doing', 'done'),
 });
 
 module.exports = {
-	addTodoValidations,
-	updateTodoValidations,
+	addTodoSchema,
+	updateTodoSchema,
 };

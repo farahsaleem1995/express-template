@@ -1,6 +1,6 @@
-const app = require('../../app');
 const request = require('supertest');
-const { todoPriority } = require('../../models/todo.model');
+
+const app = require('../../app');
 
 describe('Test GET/ Todos', () => {
 	test('It should respond with 200 Ok', async () => {
@@ -15,7 +15,11 @@ describe('Test POST/ Todos', () => {
 	const addTodoValidRequest = {
 		title: 'TODO title',
 		description: 'The description of TODO.',
-		priority: todoPriority.MEDIUM,
+		priority: 1,
+	};
+
+	const errorResponse = {
+		succeed: false,
 	};
 
 	test('It should respond with 201 Created', async () => {
@@ -28,7 +32,7 @@ describe('Test POST/ Todos', () => {
 		expect(response.body).toMatchObject({
 			title: 'TODO title',
 			description: 'The description of TODO.',
-			priority: todoPriority.MEDIUM,
+			priority: 1,
 		});
 	});
 
@@ -41,7 +45,7 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 
 	test('It should catch invalid priority', async () => {
@@ -55,7 +59,7 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 
 	test('It should catch missing title', async () => {
@@ -67,7 +71,7 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 
 	test('It should catch missing description', async () => {
@@ -79,7 +83,7 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 
 	test('It should catch invalid title min length', async () => {
@@ -93,7 +97,7 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 
 	test('It should catch invalid title max length', async () => {
@@ -107,7 +111,7 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 
 	test('It should catch invalid description min length', async () => {
@@ -121,7 +125,7 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 
 	test('It should catch invalid description max length', async () => {
@@ -135,6 +139,6 @@ describe('Test POST/ Todos', () => {
 			.expect('Content-Type', /application\/json/)
 			.expect(400);
 
-		expect(response.body).toHaveProperty('errors');
+		expect(response.body).toMatchObject(errorResponse);
 	});
 });
