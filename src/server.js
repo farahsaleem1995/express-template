@@ -1,14 +1,9 @@
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
-const path = require('path');
 
 const app = require('./app');
-
-const HTTP_PORT = process.env.HTTP_PORT || 8000;
-const HTTPS_PORT = process.env.HTTPS_PORT || 8001;
-const SSL_KEY = process.env.SSL_KEY || path.join(__dirname, '..', 'key.pem');
-const SSL_CERT = process.env.SSL_CERT || path.join(__dirname, '..', 'cert.pem');
+const { SSL_KEY, SSL_CERT, HTTP_PORT, HTTPS_PORT } = require('./config');
 
 const httpServer = http.createServer(app);
 
