@@ -7,7 +7,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "start": "node src/server.js",
-    "start:watch": "nodemon src/server.js"
+    "start:watch": "nodemon src/server.js",
+    "cluster": "pm2 start --name express-template -i 4 src/server.js"
   },
   "author": "Farah Saleem",
   "license": "ISC",
@@ -17,6 +18,7 @@
     "express": "^4.17.3",
     "joi": "^17.6.0",
     "morgan": "^1.10.0",
+    "pm2": "^5.2.0",
     "supertest": "^6.2.3",
     "winston": "^3.7.2",
     "winston-daily-rotate-file": "^4.6.1"
