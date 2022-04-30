@@ -1,7 +1,7 @@
 const express = require('express');
 const Joi = require('joi');
 
-const { createValidationErrorResponse } = require('../utils/api-response');
+const { validationError } = require('../utils/api-response');
 
 /**
  *
@@ -38,7 +38,7 @@ function validator(schema) {
 								path: err.path[0],
 						  }));
 
-				return res.status(400).json(createValidationErrorResponse(errors));
+				return res.status(400).json(validationError(errors));
 			}
 
 			next(err);
@@ -46,6 +46,4 @@ function validator(schema) {
 	};
 }
 
-module.exports = {
-	validator,
-};
+module.exports = validator;

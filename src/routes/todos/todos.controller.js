@@ -1,7 +1,7 @@
 const express = require('express');
 
-const { todosModel } = require('../../models');
-const { createSuccessResponse, createErrorResponse } = require('../../utils/api-response');
+const todosModel = require('../../models/todo.model');
+const { success, error } = require('../../utils/api-response');
 
 /**
  *
@@ -13,7 +13,7 @@ function addTodo(req, res) {
 
 	todosModel.add(createModel);
 
-	res.status(201).json(createSuccessResponse(createModel, 201));
+	res.status(201).json(success(createModel, 201));
 }
 
 /**
@@ -24,7 +24,7 @@ function addTodo(req, res) {
 function getAllTodos(req, res) {
 	const todos = todosModel.getAll();
 
-	res.status(200).json(createSuccessResponse(todos, 200));
+	res.status(200).json(success(todos, 200));
 }
 
 /**
@@ -37,10 +37,10 @@ function getTodoById(req, res) {
 
 	const todo = todosModel.getById(id);
 	if (!todo) {
-		return res.status(404).json(createErrorResponse(`Todo with ID "${id}" not found.`, 404));
+		return res.status(404).json(error(`Todo with ID "${id}" not found.`, 404));
 	}
 
-	res.status(200).json(createSuccessResponse(todo, 200));
+	res.status(200).json(success(todo, 200));
 }
 
 /**
@@ -60,7 +60,7 @@ function updateTodo(req, res) {
 	Object.assign(todo, updateModel);
 	todosModel.update(todo);
 
-	res.status(200).json(createSuccessResponse(todo, 200));
+	res.status(200).json(success(todo, 200));
 }
 
 /**
