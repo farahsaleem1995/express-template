@@ -7,7 +7,7 @@
  *
  * @returns {Object}
  */
-function success(data, statusCode, customProperties = null) {
+function createSuccessResponse(data, statusCode, customProperties = null) {
 	return {
 		success: true,
 		code: statusCode,
@@ -25,7 +25,7 @@ function success(data, statusCode, customProperties = null) {
  *
  * @returns {Object}
  */
-function error(message, statusCode, customProperties = null) {
+function createErrorResponse(message, statusCode, customProperties = null) {
 	return {
 		success: false,
 		code: statusCode,
@@ -43,7 +43,7 @@ function error(message, statusCode, customProperties = null) {
  *
  * @returns {Object}
  */
-function validationError(errors, customProperties = null) {
+function createValidationErrorResponse(errors, customProperties = null) {
 	return {
 		success: false,
 		code: 400,
@@ -54,7 +54,7 @@ function validationError(errors, customProperties = null) {
 }
 
 module.exports = {
-	success,
-	error,
-	validationError,
+	createSuccessResponse,
+	createErrorResponse,
+	createValidationErrorResponse,
 };

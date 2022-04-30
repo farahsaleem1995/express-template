@@ -1,13 +1,13 @@
 const express = require('express');
 const Joi = require('joi');
 
-const { validationError } = require('../utils/api-response');
+const { createValidationErrorResponse } = require('../utils/api-response');
 
 /**
  *
  * @param {Joi.ObjectSchema<any>} schema
  */
-function validate(schema) {
+function validator(schema) {
 	/**
 	 *
 	 * @param {express.Request} req
@@ -38,7 +38,7 @@ function validate(schema) {
 								path: err.path[0],
 						  }));
 
-				return res.status(400).json(validationError(errors));
+				return res.status(400).json(createValidationErrorResponse(errors));
 			}
 
 			next(err);
@@ -47,5 +47,5 @@ function validate(schema) {
 }
 
 module.exports = {
-	validate,
+	validator,
 };

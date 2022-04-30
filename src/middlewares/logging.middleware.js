@@ -1,7 +1,7 @@
 const morgan = require('morgan');
 const winston = require('winston');
 
-const { createLogger } = require('../utils/logger');
+const { createLogger } = require('../utils');
 
 const logger = createLogger({
 	level: 'http',

@@ -1,7 +1,6 @@
 const express = require('express');
 
-const { error } = require('../utils/api-response');
-const { createLogger } = require('../utils/logger');
+const { createErrorResponse, createLogger } = require('../utils');
 
 const errorLogger = createLogger({
 	level: 'error',
@@ -26,10 +25,10 @@ function errorHandler(err, req, res, next) {
 		});
 
 		if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-			return res.status(400).json(error(err.message));
+			return res.status(400).json(createErrorResponse(err.message));
 		}
 
-		res.status(500).json(error('Something went wrong, please try agin later.', 500));
+		res.status(500).json(createErrorResponse('Something went wrong, please try agin later.', 500));
 	}
 
 	next();

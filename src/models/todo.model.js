@@ -9,32 +9,6 @@
  * @property {0|1|2} priority
  */
 
-const { map } = require('../app');
-
-/**
- * Enum for Todo status values.
- *
- * @readonly
- * @enum {String}
- */
-const status = {
-	TODO: 'todo',
-	DOING: 'doing',
-	DONE: 'done',
-};
-
-/**
- * Enum for Todo priority values.
- *
- * @readonly
- * @enum {Number}
- */
-const priority = {
-	LOW: 0,
-	MEDIUM: 1,
-	HIGH: 2,
-};
-
 /**
  * @type {Map<Number, Todo>}
  */
