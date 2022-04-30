@@ -3,7 +3,6 @@ const express = require('express');
 const { createErrorResponse, createLogger } = require('../utils');
 
 const errorLogger = createLogger({
-	level: 'error',
 	name: 'errors',
 	datePattern: 'YYYYMMDD',
 	maxFiles: 5,
