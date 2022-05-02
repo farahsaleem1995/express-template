@@ -1,15 +1,15 @@
 const express = require('express');
 
 const { addTodo, getAllTodos, getTodoById, updateTodo, removeTodo } = require('./todos.controller');
-const { addTodoSchema, updateTodoSchema } = require('./todos.validator');
-const validator = require('../../middlewares/validation.middleware');
+const { addTodoValidator, updateTodoValidator } = require('./todos.validator');
+const useValidator = require('../../middlewares/validation.middleware');
 
 const router = express.Router();
 
 router.get('/', getAllTodos);
-router.post('/', validator(addTodoSchema), addTodo);
+router.post('/', useValidator('body', addTodoValidator), addTodo);
 router.get('/:id', getTodoById);
-router.put('/:id', validator(updateTodoSchema), updateTodo);
+router.put('/:id', useValidator('body', updateTodoValidator), updateTodo);
 router.delete('/:id', removeTodo);
 
 module.exports = router;

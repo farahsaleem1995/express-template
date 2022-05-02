@@ -1,13 +1,15 @@
 const express = require('express');
-const Joi = require('joi');
 
 const { validationError } = require('../utils/api-response');
+const { createErrorsArray } = require('../utils/validation.utils');
 
 /**
  *
- * @param {Joi.ObjectSchema<any>} schema
+ * @param {('body'|'params'|'query')} location
+ * @param {(obj: Object) => Promise<Object>} validator
+ * @returns
  */
-function validator(schema) {
+function useValidator(location, validator) {
 	/**
 	 *
 	 * @param {express.Request} req
@@ -16,27 +18,13 @@ function validator(schema) {
 	 */
 	return async (req, res, next) => {
 		try {
-			await schema.validateAsync(req.body, {
-				abortEarly: false,
-			});
+			var validatedObj = await validator(req[location]);
+			req[location] = validatedObj;
 
 			next();
 		} catch (err) {
 			if (err.isJoi) {
-				/**
-				 * @type {Joi.ValidationError}
-				 */
-				const joiError = err;
-				const errors =
-					joiError.details.length == 1
-						? {
-								message: joiError.details[0].message,
-								path: joiError.details[0].path[0],
-						  }
-						: joiError.details.map((err) => ({
-								message: err.message,
-								path: err.path[0],
-						  }));
+				const errors = createErrorsArray(err);
 
 				return res.status(400).json(validationError(errors));
 			}
@@ -46,4 +34,4 @@ function validator(schema) {
 	};
 }
 
-module.exports = validator;
+module.exports = useValidator;
