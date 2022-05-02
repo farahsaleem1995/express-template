@@ -1,76 +1,40 @@
-/**
- * Todo object.
- *
- * @typedef {Object} Todo
- * @property {Number} id
- * @property {String} title
- * @property {String} description
- * @property {'todo'|'doing'|'done'} status
- * @property {0|1|2} priority
- */
+const mongoose = require('mongoose');
 
-/**
- * @type {Map<Number, Todo>}
- */
-const todos = new Map();
-let identifierStatus = 1;
+const schema = require('./todo.schema');
 
-/**
- * Create new Todo
- *
- * @param {Todo} todo
- * @returns {void}
- */
-function add(todo) {
+const model = mongoose.model('Todo', schema);
+
+async function add(todo) {
 	Object.assign(todo, {
-		id: identifierStatus++,
 		status: 'todo',
 	});
 
-	todos.set(todo.id, todo);
+	const result = await model.create(todo);
+	return result.id;
 }
 
-/**
- * Get all Todos
- *
- * @returns {Array<Todo>}
- */
-function getAll() {
-	return Array.from(todos.values());
+async function getAll() {
+	return await model.find({});
 }
 
-/**
- * Get single Todo by its ID
- *
- * @param {Number} id
- * @returns {Todo}
- */
-function getById(id) {
-	return todos.get(id);
+async function getById(id) {
+	return await model.findById(mongoose.Types.ObjectId(id));
 }
 
-/**
- * Update single Todo
- *
- * @param {Todo} todo
- * @returns {void}
- */
-function update(todo) {
-	if (!todos.has(todo.id)) {
+async function update(todo) {
+	var result = await model.updateOne({ id: todo['id'] }, todo);
+
+	if (!result.matchedCount || !result.modifiedCount) {
 		throw new Error(`Failed to update Todo with ID "${todo.id}"`);
 	}
-
-	todos.set(todo.id, todo);
 }
 
-/**
- * Remove single Todo
- *
- * @param {Todo} todo
- * @returns {void}
- */
-function remove(todo) {
-	todos.delete(todo.id);
+async function remove(todo) {
+	var result = await model.deleteOne({ id: todo['id'] });
+
+	if (!result.matchedCount || !result.modifiedCount) {
+		throw new Error(`Failed to delete Todo with ID "${todo.id}"`);
+	}
 }
 
 module.exports = {

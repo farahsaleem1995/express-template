@@ -8,12 +8,12 @@ const { success, error } = require('../../utils/api-response');
  * @param {express.Request} req
  * @param {express.Response} res
  */
-function addTodo(req, res) {
-	const createModel = req.body;
+async function addTodo(req, res) {
+	const todo = req.body;
 
-	todosModel.add(createModel);
+	const id = await todosModel.add(todo);
 
-	res.status(201).json(success(createModel, 201));
+	res.status(201).json(success(id, 201));
 }
 
 /**
@@ -21,8 +21,8 @@ function addTodo(req, res) {
  * @param {express.Request} req
  * @param {express.Response} res
  */
-function getAllTodos(req, res) {
-	const todos = todosModel.getAll();
+async function getAllTodos(req, res) {
+	const todos = await todosModel.getAll();
 
 	res.status(200).json(success(todos, 200));
 }
@@ -32,10 +32,10 @@ function getAllTodos(req, res) {
  * @param {express.Request} req
  * @param {express.Response} res
  */
-function getTodoById(req, res) {
-	const id = Number(req.params.id);
+async function getTodoById(req, res) {
+	const id = req.params.id;
 
-	const todo = todosModel.getById(id);
+	const todo = await todosModel.getById(id);
 	if (!todo) {
 		return res.status(404).json(error(`Todo with ID "${id}" not found.`, 404));
 	}
@@ -48,17 +48,17 @@ function getTodoById(req, res) {
  * @param {express.Request} req
  * @param {express.Response} res
  */
-function updateTodo(req, res) {
-	const id = Number(req.params.id);
-	const updateModel = req.body;
+async function updateTodo(req, res) {
+	const id = req.params.id;
+	const updatedTodo = req.body;
 
-	const todo = todosModel.getById(id);
+	const todo = await todosModel.getById(id);
 	if (!todo) {
 		return res.status(404).json(createErrorResponse(`Todo with ID "${id}" not found.`, 404));
 	}
 
-	Object.assign(todo, updateModel);
-	todosModel.update(todo);
+	Object.assign(todo, updatedTodo);
+	await todosModel.update(todo);
 
 	res.status(200).json(success(todo, 200));
 }
@@ -68,15 +68,15 @@ function updateTodo(req, res) {
  * @param {express.Request} req
  * @param {express.Response} res
  */
-function removeTodo(req, res) {
-	const id = Number(req.params.id);
+async function removeTodo(req, res) {
+	const id = req.params.id;
 
-	const todo = todosModel.getById(id);
+	const todo = await todosModel.getById(id);
 	if (!todo) {
 		return res.status(404).json(createErrorResponse(`Todo with ID "${id}" not found.`, 404));
 	}
 
-	todosModel.remove(todo);
+	await todosModel.remove(todo);
 
 	res.status(204).json();
 }

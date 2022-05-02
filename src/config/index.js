@@ -19,4 +19,5 @@ module.exports = {
 	HTTPS_PORT: process.env.HTTPS_PORT,
 	SSL_KEY: process.env.SSL_KEY,
 	SSL_CERT: process.env.SSL_CERT,
+	DB_URL: process.env.DB_URL,
 };
