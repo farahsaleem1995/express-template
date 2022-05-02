@@ -3,7 +3,7 @@ const { error } = require('../utils/api-response');
 
 const { createLogger } = require('../utils/logger');
 
-const errorLogger = createLogger({
+const logger = createLogger({
 	name: 'errors',
 	datePattern: 'YYYYMMDD',
 	maxFiles: 5,
@@ -15,10 +15,10 @@ const errorLogger = createLogger({
  * @param {express.Response} res
  * @param {express.NextFunction} next
  */
-function errorHandler(err, req, res, next) {
+function useErrorHandler(err, req, res, next) {
 	if (err) {
 		const url = `${req.method}: ${req.url}`;
-		errorLogger.error({
+		logger.error({
 			context: url,
 			message: err.message,
 			stack: err.stack,
@@ -34,4 +34,4 @@ function errorHandler(err, req, res, next) {
 	next();
 }
 
-module.exports = errorHandler;
+module.exports = useErrorHandler;

@@ -3,8 +3,8 @@ const winston = require('winston');
 
 const { createLogger } = require('../utils/logger');
 
-function logger() {
-	const winstonLogger = createLogger({
+function useLogger() {
+	const logger = createLogger({
 		maxFiles: 5,
 		name: 'requests',
 		datePattern: 'YYYYMMDDHH',
@@ -16,9 +16,11 @@ function logger() {
 
 	return morgan('combined', {
 		stream: {
-			write: (message) => winstonLogger.http(message),
+			write: (message) => {
+				logger.http(message);
+			},
 		},
 	});
 }
 
-module.exports = logger;
+module.exports = useLogger;

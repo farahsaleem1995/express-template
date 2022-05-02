@@ -4,6 +4,7 @@ const { isDevelopment } = require('./env');
 require('winston-daily-rotate-file');
 
 /**
+ * @deprecated Logger configuration options.
  *
  * @typedef {Object} LoggerOptions
  * @property {String} name A string used to construct log path.
@@ -13,36 +14,44 @@ require('winston-daily-rotate-file');
  * @property {winston.Logform.Format} format Log message format.
  */
 
-const colors = {
+/**
+ * @description Log levels.
+ *
+ * @typedef {('debug'|'info'|'warn'|'error'|'http')} LogLevel
+ */
+
+/**
+ * @description Log function.
+ *
+ * @callback LogFn
+ * @param {Object} message
+ * @returns {void}
+ */
+
+/**
+ * @description Logger object.
+ *
+ * @typedef Logger
+ * @property {LogFn} debug
+ * @property {LogFn} info
+ * @property {LogFn} warn
+ * @property {LogFn} error
+ * @property {LogFn} http
+ */
+
+addColors({
 	error: 'red',
 	warn: 'yellow',
 	info: 'green',
 	http: 'magenta',
 	debug: 'white',
-};
-addColors(colors);
+});
 
-const customFormat = format.combine(
-	format.timestamp(),
-	format.colorize({ all: true }),
-	format.printf(({ timestamp, level, context, message, stack, ...rest }) => {
-		let log = `${timestamp}|${level.toUpperCase()}`;
-		if (context) {
-			log = `${log}|${context}`;
-		}
-		if (message) {
-			log = `${log}|${message}`;
-		}
-		if (Object.keys(rest).length) {
-			log = `${log}|${JSON.stringify(rest)}`;
-		}
-		if (stack) {
-			log = `${log}|${stack}`;
-		}
-		return log;
-	})
-);
-
+/**
+ * @description Get log level of current environment.
+ *
+ * @returns {LogLevel}
+ */
 function level() {
 	return isDevelopment() ? 'debug' : 'warn';
 }
@@ -50,7 +59,7 @@ function level() {
 /**
  *
  * @param {LoggerOptions} options
- * @returns {winston.Logger}
+ * @returns {Logger}
  */
 function createLogger(options) {
 	const { name, maxSize, maxFiles, datePattern, format: logFormat } = getOptions(options);
@@ -66,11 +75,41 @@ function createLogger(options) {
 
 	const consoleTransport = new transports.Console();
 
-	return createWinstonLogger({
+	const winstonLogger = createWinstonLogger({
 		format: logFormat,
 		level: level(),
-		transports: isDevelopment() ? [(fileTransport, consoleTransport)] : [fileTransport],
+		transports: isDevelopment() ? [fileTransport, consoleTransport] : [fileTransport],
 	});
+
+	return getLogger(winstonLogger);
+}
+
+/**
+ *
+ * @param {winston.Logger} winstonLogger
+ * @returns {Logger}
+ */
+function getLogger(winstonLogger) {
+	/**
+	 * @type {Logger}
+	 */
+	return {
+		debug: function (message) {
+			winstonLogger.debug(message);
+		},
+		info: function (message) {
+			winstonLogger.info(message);
+		},
+		warn: function (message) {
+			winstonLogger.warn(message);
+		},
+		error: function (message) {
+			winstonLogger.error(message);
+		},
+		http: function (message) {
+			winstonLogger.http(message);
+		},
+	};
 }
 
 /**
@@ -85,14 +124,37 @@ function getOptions(options) {
 		maxSize: null,
 		maxFiles: null,
 		datePattern: 'YYYYMMDD',
-		format: format.combine(format.timestamp(), customFormat),
+		format: format.combine(format.timestamp(), getFormat()),
 	};
 	Object.assign(defaultOptions, options);
 
 	return defaultOptions;
 }
 
+function getFormat() {
+	return format.combine(
+		format.timestamp(),
+		format.colorize({ all: true }),
+		format.printf(({ timestamp, level, context, message, stack, ...rest }) => {
+			let log = `${timestamp}|${level.toUpperCase()}`;
+			if (context) {
+				log = `${log}|${context}`;
+			}
+			if (message) {
+				log = `${log}|${message}`;
+			}
+			if (Object.keys(rest).length) {
+				log = `${log}|${JSON.stringify(rest)}`;
+			}
+			if (stack) {
+				log = `${log}|${stack}`;
+			}
+			return log;
+		})
+	);
+}
+
 module.exports = {
-	logLevel: level,
+	level,
 	createLogger,
 };
