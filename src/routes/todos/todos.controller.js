@@ -22,7 +22,6 @@ async function addTodo(req, res) {
  * @param {express.Response} res
  */
 async function getAllTodos(req, res) {
-	throw new Error();
 	const todos = await todosModel.getAll();
 
 	res.status(200).json(success(todos, 200));
