@@ -1,26 +1,24 @@
 const morgan = require('morgan');
-const winston = require('winston');
 
 const { createLogger } = require('../utils/logger');
 
 function useLogger() {
 	const logger = createLogger({
 		maxFiles: 5,
-		name: 'requests',
+		name: 'app',
 		datePattern: 'YYYYMMDDHH',
-		format: winston.format.combine(
-			winston.format.colorize({ all: true }),
-			winston.format.printf(({ message }) => message.substring(0, message.lastIndexOf('\n')))
-		),
 	});
 
-	return morgan('combined', {
-		stream: {
-			write: (message) => {
-				logger.http(message);
+	return morgan(
+		':remote-addr - :remote-user ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
+		{
+			stream: {
+				write: (message) => {
+					logger.http(message.substring(0, message.lastIndexOf('\n')));
+				},
 			},
-		},
-	});
+		}
+	);
 }
 
 module.exports = useLogger;

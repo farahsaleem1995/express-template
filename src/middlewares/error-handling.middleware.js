@@ -1,10 +1,8 @@
-const express = require('express');
 const { error } = require('../utils/api-response');
-
 const { createLogger } = require('../utils/logger');
 
 const logger = createLogger({
-	name: 'errors',
+	name: 'error',
 	datePattern: 'YYYYMMDD',
 	maxFiles: 5,
 });

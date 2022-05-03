@@ -1,22 +1,14 @@
-const { createLogger: createWinstonLogger, transports, format, addColors } = require('winston');
+const { createLogger: createWinstonLogger, transports, format } = require('winston');
 const { isDevelopment } = require('./env');
 const { removeFalsyProperties } = require('./helpers.utils');
 require('winston-daily-rotate-file');
-
-addColors({
-	error: 'red',
-	warn: 'yellow',
-	info: 'green',
-	http: 'magenta',
-	debug: 'white',
-});
 
 function level() {
 	return isDevelopment() ? 'debug' : 'warn';
 }
 
-function createLogger({ name, maxSize, maxFiles, datePattern, format }) {
-	const loggerOption = getOptions({ name, maxSize, maxFiles, datePattern, format });
+function createLogger({ name, maxSize, maxFiles, datePattern }) {
+	const loggerOption = getOptions({ name, maxSize, maxFiles, datePattern });
 
 	const fileTransport = new transports.DailyRotateFile({
 		dirname: `logs/${loggerOption.name}`,
@@ -26,57 +18,70 @@ function createLogger({ name, maxSize, maxFiles, datePattern, format }) {
 		maxSize: loggerOption.maxSize,
 		utc: true,
 		extension: '.log',
+		format: getFileFormat(),
 	});
 
-	const consoleTransport = new transports.Console();
+	const consoleTransport = new transports.Console({
+		format: getConsoleFormat(),
+	});
 
 	const winstonLogger = createWinstonLogger({
-		format: loggerOption.format,
 		level: level(),
 		transports: isDevelopment() ? [fileTransport, consoleTransport] : [fileTransport],
 	});
 
-	return getLogger(winstonLogger);
+	return getLogger(name, winstonLogger);
 }
 
-function getLogger(winstonLogger) {
+function getLogger(name, winstonLogger) {
 	return {
 		debug: function (message) {
-			winstonLogger.debug(message);
+			winstonLogger.debug(rebuildMessage(name, message));
 		},
 		info: function (message) {
-			winstonLogger.info(message);
+			winstonLogger.info(rebuildMessage(name, message));
 		},
 		warn: function (message) {
-			winstonLogger.warn(message);
+			winstonLogger.warn(rebuildMessage(name, message));
 		},
 		error: function (message) {
-			winstonLogger.error(message);
+			winstonLogger.error(rebuildMessage(name, message));
 		},
 		http: function (message) {
-			winstonLogger.http(message);
+			winstonLogger.http(rebuildMessage(name, message));
 		},
 	};
 }
 
+function rebuildMessage(name, message) {
+	if (typeof message == 'string') {
+		return `[${name}] ${message}`;
+	}
+
+	if (message.message) {
+		return { ...message, message: `[${name}] ${message.message}` };
+	}
+
+	return message;
+}
+
 function getOptions(options) {
+	const loggerName = options.name ?? 'default';
 	const defaultOptions = {
 		level: level(),
-		name: 'default',
+		name: loggerName,
 		maxSize: null,
 		maxFiles: null,
 		datePattern: 'YYYYMMDD',
-		format: format.combine(format.timestamp(), getFormat()),
 	};
 	Object.assign(defaultOptions, removeFalsyProperties(options));
 
 	return defaultOptions;
 }
 
-function getFormat() {
+function getFileFormat() {
 	return format.combine(
 		format.timestamp(),
-		format.colorize({ all: true }),
 		format.printf(({ timestamp, level, context, message, stack, ...rest }) => {
 			let log = `${timestamp}|${level.toUpperCase()}`;
 			if (context) {
@@ -93,6 +98,22 @@ function getFormat() {
 			}
 			return log;
 		})
+	);
+}
+
+function getConsoleFormat() {
+	return format.combine(
+		format.colorize({
+			all: true,
+			colors: {
+				error: 'red',
+				warn: 'yellow',
+				info: 'green',
+				http: 'magenta',
+				debug: 'white',
+			},
+		}),
+		format.printf(({ message }) => message)
 	);
 }
 
