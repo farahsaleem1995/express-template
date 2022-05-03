@@ -1,10 +1,6 @@
 const { connect, disconnect, connection } = require('mongoose');
 const { createLogger } = require('../utils/logger');
 
-/**
- *
- * @param {String} uri Data base connection URL.
- */
 function dbConnect(uri) {
 	const logger = createLogger({
 		name: 'system',

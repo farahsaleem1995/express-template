@@ -3,11 +3,6 @@ const express = require('express');
 const todosModel = require('../../models/todo.model');
 const { success, error } = require('../../utils/api-response');
 
-/**
- *
- * @param {express.Request} req
- * @param {express.Response} res
- */
 async function addTodo(req, res) {
 	const todo = req.body;
 
@@ -16,22 +11,12 @@ async function addTodo(req, res) {
 	res.status(201).json(success(id, 201));
 }
 
-/**
- *
- * @param {express.Request} req
- * @param {express.Response} res
- */
 async function getAllTodos(req, res) {
 	const todos = await todosModel.getAll();
 
 	res.status(200).json(success(todos, 200));
 }
 
-/**
- *
- * @param {express.Request} req
- * @param {express.Response} res
- */
 async function getTodoById(req, res) {
 	const id = req.params.id;
 
@@ -43,11 +28,6 @@ async function getTodoById(req, res) {
 	res.status(200).json(success(todo, 200));
 }
 
-/**
- *
- * @param {express.Request} req
- * @param {express.Response} res
- */
 async function updateTodo(req, res) {
 	const id = req.params.id;
 	const updatedTodo = req.body;
@@ -63,11 +43,6 @@ async function updateTodo(req, res) {
 	res.status(200).json(success(todo, 200));
 }
 
-/**
- *
- * @param {express.Request} req
- * @param {express.Response} res
- */
 async function removeTodo(req, res) {
 	const id = req.params.id;
 

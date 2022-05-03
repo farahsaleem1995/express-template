@@ -4,7 +4,7 @@ const fs = require('fs');
 
 const app = require('./app');
 const { SSL_KEY, SSL_CERT, HTTP_PORT, HTTPS_PORT, DB_URL } = require('./config');
-const { dbConnect, dbDisconnect } = require('./database');
+const { dbConnect } = require('./database');
 
 const httpServer = http.createServer(app);
 

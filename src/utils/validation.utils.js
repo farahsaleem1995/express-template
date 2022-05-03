@@ -1,7 +1,3 @@
-/**
- *
- * @param {import("joi").ValidationError} err
- */
 function createErrorsArray(err) {
 	return err.details.length == 1
 		? {

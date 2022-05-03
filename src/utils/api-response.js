@@ -1,12 +1,3 @@
-/**
- * @description Send success response.
- *
- * @param {Object|Array} data
- * @param {Number} statusCode
- * @param {Object} customProperties
- *
- * @returns {Object}
- */
 function success(data, statusCode, customProperties = null) {
 	return {
 		success: true,
@@ -16,15 +7,6 @@ function success(data, statusCode, customProperties = null) {
 	};
 }
 
-/**
- * @description Send error response.
- *
- * @param {String} message
- * @param {Number} statusCode
- * @param {Object} customProperties
- *
- * @returns {Object}
- */
 function error(message, statusCode, customProperties = null) {
 	return {
 		success: false,
@@ -34,15 +16,6 @@ function error(message, statusCode, customProperties = null) {
 	};
 }
 
-/**
- * @description Send validation error response.
- *
- * @param {Object|Array} errors
- * @param {Number} statusCode
- * @param {Object} customProperties
- *
- * @returns {Object}
- */
 function validationError(errors, customProperties = null) {
 	return {
 		success: false,

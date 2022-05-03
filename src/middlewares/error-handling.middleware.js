@@ -9,12 +9,6 @@ const logger = createLogger({
 	maxFiles: 5,
 });
 
-/**
- * @param {Error} err
- * @param {express.Request} req
- * @param {express.Response} res
- * @param {express.NextFunction} next
- */
 function useErrorHandler(err, req, res, next) {
 	if (err) {
 		const url = `${req.method}: ${req.url}`;

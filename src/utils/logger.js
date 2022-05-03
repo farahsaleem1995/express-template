@@ -1,43 +1,7 @@
 const { createLogger: createWinstonLogger, transports, format, addColors } = require('winston');
-const winston = require('winston');
 const { isDevelopment } = require('./env');
+const { removeFalsyProperties } = require('./helpers.utils');
 require('winston-daily-rotate-file');
-
-/**
- * @deprecated Logger configuration options.
- *
- * @typedef {Object} LoggerOptions
- * @property {String} name A string used to construct log path.
- * @property {Number} maxSize Maximum size of the file after which it will rotate.
- * @property {Number} maxFiles Maximum number of logs to keep.
- * @property {String} datePattern A string representing the moment.js date format.
- * @property {winston.Logform.Format} format Log message format.
- */
-
-/**
- * @description Log levels.
- *
- * @typedef {('debug'|'info'|'warn'|'error'|'http')} LogLevel
- */
-
-/**
- * @description Log function.
- *
- * @callback LogFn
- * @param {Object} message
- * @returns {void}
- */
-
-/**
- * @description Logger object.
- *
- * @typedef Logger
- * @property {LogFn} debug
- * @property {LogFn} info
- * @property {LogFn} warn
- * @property {LogFn} error
- * @property {LogFn} http
- */
 
 addColors({
 	error: 'red',
@@ -47,28 +11,19 @@ addColors({
 	debug: 'white',
 });
 
-/**
- * @description Get log level of current environment.
- *
- * @returns {LogLevel}
- */
 function level() {
 	return isDevelopment() ? 'debug' : 'warn';
 }
 
-/**
- *
- * @param {LoggerOptions} options
- * @returns {Logger}
- */
-function createLogger(options) {
-	const { name, maxSize, maxFiles, datePattern, format: logFormat } = getOptions(options);
+function createLogger({ name, maxSize, maxFiles, datePattern, format }) {
+	const loggerOption = getOptions({ name, maxSize, maxFiles, datePattern, format });
+
 	const fileTransport = new transports.DailyRotateFile({
-		dirname: `logs/${name}`,
-		filename: `${name}-%DATE%-winston`,
-		datePattern: datePattern,
-		maxFiles: maxFiles,
-		maxSize: maxSize,
+		dirname: `logs/${loggerOption.name}`,
+		filename: `${loggerOption.name}-%DATE%-winston`,
+		datePattern: loggerOption.datePattern,
+		maxFiles: loggerOption.maxFiles,
+		maxSize: loggerOption.maxSize,
 		utc: true,
 		extension: '.log',
 	});
@@ -76,7 +31,7 @@ function createLogger(options) {
 	const consoleTransport = new transports.Console();
 
 	const winstonLogger = createWinstonLogger({
-		format: logFormat,
+		format: loggerOption.format,
 		level: level(),
 		transports: isDevelopment() ? [fileTransport, consoleTransport] : [fileTransport],
 	});
@@ -84,15 +39,7 @@ function createLogger(options) {
 	return getLogger(winstonLogger);
 }
 
-/**
- *
- * @param {winston.Logger} winstonLogger
- * @returns {Logger}
- */
 function getLogger(winstonLogger) {
-	/**
-	 * @type {Logger}
-	 */
 	return {
 		debug: function (message) {
 			winstonLogger.debug(message);
@@ -112,11 +59,6 @@ function getLogger(winstonLogger) {
 	};
 }
 
-/**
- *
- * @param {winston.logFormat} options
- * @returns {LoggerOptions}
- */
 function getOptions(options) {
 	const defaultOptions = {
 		level: level(),
@@ -126,7 +68,7 @@ function getOptions(options) {
 		datePattern: 'YYYYMMDD',
 		format: format.combine(format.timestamp(), getFormat()),
 	};
-	Object.assign(defaultOptions, options);
+	Object.assign(defaultOptions, removeFalsyProperties(options));
 
 	return defaultOptions;
 }
