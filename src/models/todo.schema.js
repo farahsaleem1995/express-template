@@ -27,7 +27,16 @@ const todoSchema = new Schema(
 	},
 	{
 		id: true,
+		timestamps: true,
 	}
 );
+
+todoSchema.set('toJSON', {
+	virtuals: true,
+	versionKey: false,
+	transform: function (doc, ret) {
+		delete ret._id;
+	},
+});
 
 module.exports = todoSchema;
