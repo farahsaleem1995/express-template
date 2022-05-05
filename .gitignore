@@ -130,4 +130,5 @@ dist
 .pnp.*
 
 # SSL configs
+ssl/
 *.pem
