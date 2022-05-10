@@ -1,41 +1,39 @@
-const { connect, disconnect, connection } = require('mongoose');
-const { createLogger } = require('../utils/logger');
+/**
+ *
+ * @param {{mongoose: import('mongoose')}} param0
+ * @returns
+ */
+function db({ dbLogger, mongoose }) {
+	const { connect, disconnect, connection } = mongoose;
 
-function dbConnect(uri) {
-	const logger = createLogger({
-		name: 'database',
-		maxFiles: 5,
-	});
+	function dbConnect(uri) {
+		connection.once('open', () => {
+			dbLogger.info(`connected to mongodb successfully: ${uri}.`);
+		});
 
-	connection.once('open', () => {
-		logger.info(`connected to mongodb successfully: ${uri}.`);
-	});
+		connection.on('error', () => {
+			dbLogger.info(`failed to connect to mongodb: ${uri}.`);
+		});
 
-	connection.on('error', () => {
-		logger.info(`failed to connect to mongodb: ${uri}.`);
-	});
+		return connect(uri);
+	}
 
-	return connect(uri);
+	function dbDisconnect() {
+		connection.once('close', () => {
+			dbLogger.info(`disconnected from mongodb successfully.`);
+		});
+
+		connection.on('error', () => {
+			dbLogger.info(`failed to disconnect from mongodb.`);
+		});
+
+		return disconnect();
+	}
+
+	return {
+		connect: dbConnect,
+		disconnect: dbDisconnect,
+	};
 }
 
-function dbDisconnect() {
-	const logger = createLogger({
-		name: 'system',
-		maxFiles: 5,
-	});
-
-	connection.once('close', () => {
-		logger.info(`disconnected from mongodb successfully.`);
-	});
-
-	connection.on('error', () => {
-		logger.info(`failed to disconnect from mongodb.`);
-	});
-
-	return disconnect();
-}
-
-module.exports = {
-	dbConnect,
-	dbDisconnect,
-};
+module.exports = db;

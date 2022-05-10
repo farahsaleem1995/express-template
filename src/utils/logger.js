@@ -117,7 +117,4 @@ function getConsoleFormat() {
 	);
 }
 
-module.exports = {
-	level,
-	createLogger,
-};
+module.exports = createLogger;

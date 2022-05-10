@@ -1,18 +1,28 @@
-const express = require('express');
-const cors = require('cors');
+/**
+ *
+ * @param {import("awilix").AwilixContainer} container
+ */
+async function create(container) {
+	const express = container.resolve('express');
+	const app = express();
+	const db = container.resolve('db');
+	const cors = container.resolve('cors');
+	const { DB_URL } = container.resolve('config');
+	const logger = container.resolve('loggingMiddleware');
+	const errorHandler = container.resolve('errorHandlingMiddleware');
+	const todosRouter = container.resolve('todosRouter');
 
-const useLogger = require('./middlewares/logging.middleware');
-const useErrorHandler = require('./middlewares/error-handling.middleware');
-const todosRouter = require('./routes/todos/todos.router');
+	await db.connect(DB_URL);
 
-const app = express();
+	app.use(cors());
+	app.use(express.json());
+	app.use(logger);
 
-app.use(cors());
-app.use(express.json());
-app.use(useLogger());
+	app.use('/todos', todosRouter);
 
-app.use('/todos', todosRouter);
+	app.use(errorHandler);
 
-app.use(useErrorHandler);
+	return app;
+}
 
-module.exports = app;
+module.exports = { create };
