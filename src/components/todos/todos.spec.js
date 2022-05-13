@@ -1,16 +1,17 @@
 const request = require('supertest');
 
-const app = require('../../app');
-const { dbConnect, dbDisconnect } = require('../../database');
-const { DB_URL } = require('../../config');
+const appFactory = require('../../app');
+const container = require('../../container');
+const db = container.resolve('db');
+let app;
 
 describe('API test', () => {
 	beforeAll(async () => {
-		await dbConnect(DB_URL);
+		app = await appFactory.create(container);
 	});
 
 	afterAll(async () => {
-		await dbDisconnect();
+		db.disconnect();
 	});
 
 	describe('Test GET/ Todos', () => {
